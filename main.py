@@ -2,7 +2,7 @@
 # Variabili categoriche: season, yr, mnth, hr, weekday, weathersit
 # Variabili binarie: holiday, workingday
 # Variabili numeriche: temp, atemp, hum, windspeed
-# Variabile da trasformare: dteday (usata per estrarre weekday o mnth) ma di puà IGNORARE perchè ci sono già nel dataset
+# Variabile da trasformare: dteday (usata per estrarre weekday o mnth) ma di può IGNORARE perchè ci sono già nel dataset
 
 import warnings
 import pandas as pd
