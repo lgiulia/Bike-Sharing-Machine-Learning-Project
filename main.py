@@ -8,6 +8,8 @@ import pandas as pd
 import warnings
 import seaborn as sns
 import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 
 pd.set_option('display.expand_frame_repr', False)
 warnings.simplefilter(action='ignore', category=FutureWarning)
@@ -55,3 +57,13 @@ plt.figure(figsize=(12, 10))
 sns.heatmap(df[numerical_features].corr(), annot=True, fmt='.2f', cmap='coolwarm')
 plt.title('Correlation Matrix Heatmap')
 plt.show()
+
+# Fase 3: Suddivisione e Scalamento dei Dati
+# Divide i dati i training e test
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42) #X_train e y_train: 80%; X_test e y_test: 20%
+
+scaler = StandardScaler().fit(X_train) #Standardization (mean=0, std=1). Calcola i parametri per mean e std sul set di addestramento (X_train)
+X_train_scaled = scaler.transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+# Fase 4: Definizione e Addestramento dei Modelli
