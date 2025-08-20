@@ -62,7 +62,8 @@ plt.show()
 # Divide i dati i training e test
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42) #X_train e y_train: 80%; X_test e y_test: 20%
 
-scaler = StandardScaler().fit(X_train) #Standardization (mean=0, std=1). Calcola i parametri per mean e std sul set di addestramento (X_train)
+scaler = StandardScaler() #Standardization (mean=0, std=1)
+scaler.fit(X_train) # Calcola i parametri per mean e std sul set di addestramento (X_train)
 X_train_scaled = scaler.transform(X_train)
 X_test_scaled = scaler.transform(X_test)
 
