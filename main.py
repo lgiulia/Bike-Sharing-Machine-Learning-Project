@@ -44,3 +44,14 @@ print(X.head()) #stampa le prime 5 righe del dataframe
 sns.histplot(x='cnt', data=df, kde=True) #crea un istogramma. kde (Kernel Density Estimate):linea curva
 plt.title('Distribution of Bike Rentals')
 plt.show()
+
+sns.scatterplot(x='temp', y='cnt', data=df) #crea un grafico a dispersione. Ha una relazione non lineare
+plt.title('Bike Rentals vs. Temperature')
+plt.show()
+
+#Matrice di correlazione
+numerical_features = ['temp', 'atemp', 'hum', 'windspeed', 'casual', 'registered', 'cnt']
+plt.figure(figsize=(12, 10))
+sns.heatmap(df[numerical_features].corr(), annot=True, fmt='.2f', cmap='coolwarm')
+plt.title('Correlation Matrix Heatmap')
+plt.show()
