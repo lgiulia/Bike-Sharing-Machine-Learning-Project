@@ -116,7 +116,7 @@ scores = cross_validate(final_model, X_train_scaled, y_train, cv=5, scoring='neg
                                                                                                             # cv=5: 5 fold (il set di training viene diviso in 5 sotto-insiemi, addestrato su 4 e valutato sul quinto
                                                                                                             # scoring: metrica di valutazione valore negativo di RMSE
 rmse_scores = -scores['test_score'] # accede alla chiave 'test_score' nel diz score che contiene i punteggi di RMSE per ogni fold
-print('The cross-validated RMSE of the Stacking Ensemble meta-model is ', np.mean(rmse_scores))
+print(f'The cross-validated RMSE of the Stacking Ensemble meta-model is {np.mean(rmse_scores): .2f}')
 
 # Fase 5: Final Training e Testing
 final_model.fit(X_train_scaled, y_train)  # addestra il modello finale (Stacking Regressor) sui dati di X_train_scaled e y_train
