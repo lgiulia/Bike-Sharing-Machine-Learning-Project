@@ -9,6 +9,7 @@ import warnings
 import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
+from sklearn.metrics import mean_squared_error, r2_score
 
 from sklearn.model_selection import train_test_split, GridSearchCV, cross_validate
 from sklearn.preprocessing import StandardScaler
@@ -118,3 +119,24 @@ rmse_scores = -scores['test_score'] # accede alla chiave 'test_score' nel diz sc
 print('The cross-validated RMSE of the Stacking Ensemble meta-model is ', np.mean(rmse_scores))
 
 # Fase 5: Final Training e Testing
+final_model.fit(X_train_scaled, y_train)  # addestra il modello finale (Stacking Regressor) sui dati di X_train_scaled e y_train
+y_pred = final_model.predict(X_test_scaled) # il modello fa una previsione sui dati di test. y_pred: viene salvato il risultato delle previsioni
+
+# Valutazione finale
+print('\n---- Final Testing Results ----')
+mse = mean_squared_error(y_test, y_pred)
+rmse = np.sqrt(mse)
+r2 = r2_score(y_test, y_pred)  # percentuale della varianza nel numero di noleggi
+
+print(f'Mean Squared Error (MSE): {mse: .2f}')
+print(f'Root Mean Squared Error (RMSE): {rmse: .2f}')
+print(f'R-squared (R2) Score: {r2: .2f}')
+
+# Visualizzazione dei risultati
+plt.figure(figsize=(12, 10))
+sns.scatterplot(x=y_test, y=y_pred)
+plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'r--', lw=2) # Traccia una linea sul grafico che su x e y va dal valore minimo al valore massimo di y_test; r--: riga rossa tratteggiata; lw=2: line width
+plt.xlabel('Valori reali')
+plt.ylabel('Valori Predetti')
+plt.title('Valori Reali vs Valori Predetti')
+plt.show()
