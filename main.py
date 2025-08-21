@@ -8,8 +8,13 @@ import pandas as pd
 import warnings
 import seaborn as sns
 import matplotlib.pyplot as plt
-from sklearn.model_selection import train_test_split
+import numpy as np
+
+from sklearn.model_selection import train_test_split, GridSearchCV, cross_validate
 from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LinearRegression
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.ensemble import RandomForestRegressor, StackingRegressor
 
 pd.set_option('display.expand_frame_repr', False)
 warnings.simplefilter(action='ignore', category=FutureWarning)
@@ -68,3 +73,48 @@ X_train_scaled = scaler.transform(X_train)
 X_test_scaled = scaler.transform(X_test)
 
 # Fase 4: Definizione e Addestramento dei Modelli
+models = [
+    LinearRegression(),
+    DecisionTreeRegressor(),
+    RandomForestRegressor(),
+]
+
+models_names = ['Linear Regression', 'Decision Tree', 'Random Forest']
+
+# Iperparametri per i modelli di regressione
+models_parameters = [
+    {},  # Linear Regression
+    {'max_depth': [5, 10, 15, 20]},  # Decision Tree
+    {'n_estimators': [50, 100, 200], 'max_depth': [5, 10, 15]},  # Random Forest
+]
+
+choosen_hparameters = [] # per salvare i migliori iperparametri
+estimators = [] # per salvare i migliori modelli
+
+for model, model_name, hparameters in zip(models, models_names, models_parameters):
+    print(f'\n{model_name}')
+    clf = GridSearchCV(estimator=model, param_grid=hparameters, scoring='neg_mean_squared_error', cv=5) #estimator: algoritmo che si vuole ottimizzare; param_grid: iperparametri che si vogliono utilizzare;
+                                                                                                        # scoring: metrica di valutazione (massimizzare il valore negativo ovvero minimizzare il valore positivo);
+                                                                                                        #cv: numero di fold (pieghe) per la cross-validation
+    clf.fit(X_train_scaled, y_train) # avvia training e ottimizzazione
+    choosen_hparameters.append(clf.best_params_) # combinazione di iperparametri che ha dato il miglior punteggio
+    estimators.append((model_name, clf.best_estimator_)) # modello già addestrato con la migliore combinazione di parametri
+    best_mse = -clf.best_score_  # conteggio della migliore combinazione di iperparametri. Abbiamo usato ned_mean_squared_error quindi è negativo e si trasforma in positivo
+    print(f'Best MSE: {best_mse: .2f}') # errore quadratico medio
+    print(f'Best RMSE: {np.sqrt(best_mse):.2f}') # radice dell'errore quadratico medio
+    for hparam in hparameters:
+        print(f'The best choice for parameter {hparam}: ', clf.best_params_.get(hparam)) # migliori valori trovati per ogni iperparametro
+
+# Stacking Regressor
+print("\n--- Stacking Regressor ---")
+final_model = StackingRegressor(estimators=estimators, final_estimator=LinearRegression()) # Stacking Regressor: combina le previsioni di più modelli di base per creare una previsione finale
+
+# Cross Validation per il modello finale
+scores = cross_validate(final_model, X_train_scaled, y_train, cv=5, scoring='neg_root_mean_squared_error') # final_model: modello che viene addestrato e valutato (Stacking Regressor);
+                                                                                                            # X_train_scaled e y_train: dati che vengono utilizzati per la cross-validation (solo training no testing);
+                                                                                                            # cv=5: 5 fold (il set di training viene diviso in 5 sotto-insiemi, addestrato su 4 e valutato sul quinto
+                                                                                                            # scoring: metrica di valutazione valore negativo di RMSE
+rmse_scores = -scores['test_score'] # accede alla chiave 'test_score' nel diz score che contiene i punteggi di RMSE per ogni fold
+print('The cross-validated RMSE of the Stacking Ensemble meta-model is ', np.mean(rmse_scores))
+
+# Fase 5: Final Training e Testing
