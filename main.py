@@ -64,8 +64,11 @@ sns.heatmap(df[numerical_features].corr(), annot=True, fmt='.2f', cmap='coolwarm
 plt.title('Correlation Matrix Heatmap')
 plt.show()
 
+# Rimuovo 'temp' perché altamente correlata con 'atemp'
+X = X.drop(['temp'], axis=1)
+
 # Fase 3: Suddivisione e Scalamento dei Dati
-# Divide i dati i training e test
+# Divide i dati in training e test
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42) #X_train e y_train: 80%; X_test e y_test: 20%
 
 scaler = StandardScaler() #Standardization (mean=0, std=1)
@@ -95,12 +98,12 @@ estimators = [] # per salvare i migliori modelli
 for model, model_name, hparameters in zip(models, models_names, models_parameters):
     print(f'\n{model_name}')
     clf = GridSearchCV(estimator=model, param_grid=hparameters, scoring='neg_mean_squared_error', cv=5) #estimator: algoritmo che si vuole ottimizzare; param_grid: iperparametri che si vogliono utilizzare;
-                                                                                                        # scoring: metrica di valutazione (massimizzare il valore negativo ovvero minimizzare il valore positivo);
+                                                                                                        #scoring: metrica di valutazione (massimizzare il valore negativo ovvero minimizzare il valore positivo);
                                                                                                         #cv: numero di fold (pieghe) per la cross-validation
     clf.fit(X_train_scaled, y_train) # avvia training e ottimizzazione
     choosen_hparameters.append(clf.best_params_) # combinazione di iperparametri che ha dato il miglior punteggio
     estimators.append((model_name, clf.best_estimator_)) # modello già addestrato con la migliore combinazione di parametri
-    best_mse = -clf.best_score_  # conteggio della migliore combinazione di iperparametri. Abbiamo usato ned_mean_squared_error quindi è negativo e si trasforma in positivo
+    best_mse = -clf.best_score_  # conteggio della migliore combinazione di iperparametri. Ho usato ned_mean_squared_error quindi è negativo e si trasforma in positivo
     print(f'Best MSE: {best_mse: .2f}') # errore quadratico medio
     print(f'Best RMSE: {np.sqrt(best_mse):.2f}') # radice dell'errore quadratico medio
     for hparam in hparameters:
