@@ -25,10 +25,6 @@ warnings.simplefilter(action='ignore', category=UserWarning)
 df = pd.read_csv('hour.csv') #df: dataframe
 
 print(df.info()) #riepilogo del dataframe
-print("\n")
-print(df.head()) #stampa le prime 5 righe
-print("\n")
-print(df.describe().T.to_string()) #riassunto statistico di tutte le variabili numeriche
 print('\nNull elements: ', df.isnull().values.any()) #verifica l'esistenza di valori mancanti
 
 # Fase 1: EDA e Feature Engeneering
@@ -45,8 +41,6 @@ X = pd.get_dummies(X, columns=['season', 'yr', 'mnth', 'hr', 'weekday', 'weather
 
 print("\nDataframe dopo One-Hot Encoding:")
 print(X.info())
-print("\n")
-print(X.head()) #stampa le prime 5 righe del dataframe
 
 # Fase 2: Visualizzazione dei dati
 sns.histplot(x='cnt', data=df, kde=True) #crea un istogramma. kde (Kernel Density Estimate):linea curva
