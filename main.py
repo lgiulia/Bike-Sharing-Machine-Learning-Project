@@ -3,8 +3,8 @@ import warnings
 import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
-from sklearn.metrics import mean_squared_error, r2_score
 
+from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.model_selection import train_test_split, GridSearchCV, cross_validate
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.linear_model import LinearRegression
@@ -36,16 +36,13 @@ encoder = LabelEncoder()
 for col in categorical_features:
     X[col] = encoder.fit_transform(X[col])
 
-print("\nDataframe dopo Label Encoding:")
-print(X.info())
-
 # Fase 2: Visualizzazione dei dati
 sns.histplot(x='cnt', data=df, kde=True) #crea un istogramma
 plt.title('Distribution of Bike Rentals')
 plt.show()
 
-sns.scatterplot(x='temp', y='cnt', data=df) #crea un grafico a dispersione
-plt.title('Bike Rentals vs. Temperature')
+sns.scatterplot(x='atemp', y='cnt', data=df) #crea un grafico a dispersione
+plt.title('Bike Rentals vs. Apparent Temperature')
 plt.show()
 
 #Matrice di correlazione
@@ -60,7 +57,7 @@ X = X.drop(['temp'], axis=1)
 
 # Fase 3: Suddivisione e Scalamento dei Dati
 # Divide i dati in training e test
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42) #X_train e y_train: 80%; X_test e y_test: 20%
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42) #X_train: 80%; X_test: 20%
 
 scaler = StandardScaler() #Standardization (mean=0, std=1)
 scaler.fit(X_train) # Calcola i parametri per mean e std sul set di addestramento (X_train)
