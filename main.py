@@ -6,7 +6,7 @@ import numpy as np
 from sklearn.metrics import mean_squared_error, r2_score
 
 from sklearn.model_selection import train_test_split, GridSearchCV, cross_validate
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.linear_model import LinearRegression
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor, StackingRegressor
@@ -29,11 +29,14 @@ y = df['cnt']
 #Si ignorano 'instant', 'dteday', 'casual' e 'registered'
 X = df.drop(['instant', 'dteday', 'casual', 'registered', 'cnt'], axis=1) #axis=1: opera sulle colonne
 
-#One-Hot Encoding per le variabili categoriche
+# Label Encoding per le variabili categoriche
 #Variabili categoriche da trasformare: 'season', 'yr', 'mnth', 'hr', 'weekday', 'weathersit'
-X = pd.get_dummies(X, columns=['season', 'yr', 'mnth', 'hr', 'weekday', 'weathersit'], drop_first=True) #converte colonne categoriche in formato numerico
+categorical_features = ['season', 'yr', 'mnth', 'hr', 'weekday', 'weathersit']
+encoder = LabelEncoder()
+for col in categorical_features:
+    X[col] = encoder.fit_transform(X[col])
 
-print("\nDataframe dopo One-Hot Encoding:")
+print("\nDataframe dopo Label Encoding:")
 print(X.info())
 
 # Fase 2: Visualizzazione dei dati
@@ -121,7 +124,7 @@ print(f'R-squared (R2) Score: {r2: .2f}')
 # Visualizzazione dei risultati
 plt.figure(figsize=(12, 10))
 sns.scatterplot(x=y_test, y=y_pred)
-plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'r--', lw=2) 
+plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'r--', lw=2)
 plt.xlabel('Valori reali')
 plt.ylabel('Valori Predetti')
 plt.title('Valori Reali vs Valori Predetti')
